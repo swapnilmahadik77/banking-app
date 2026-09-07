@@ -1,8 +1,0 @@
-*.key
-*.pem
-*.p12
-*.jks
-.env
-secrets/
-application-secret*.yml
-
