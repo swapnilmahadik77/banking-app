@@ -1,0 +1,44 @@
+server:
+  port: 8080
+
+spring:
+  cloud:
+    gateway:
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+      httpclient:
+        connect-timeout: 2000
+        response-timeout: 5s
+      routes:
+        - id: identity-service
+          uri: ${IDENTITY_SERVICE_URI:lb://identity-service}
+          predicates: [Path=/api/v1/auth/**,/api/v1/users/**]
+        - id: account-service
+          uri: ${ACCOUNT_SERVICE_URI:lb://account-service}
+          predicates: [Path=/api/v1/accounts/**,/api/v1/balances/**]
+        - id: transfer-service
+          uri: ${TRANSFER_SERVICE_URI:lb://transfer-service}
+          predicates: [Path=/api/v1/transfers/**,/api/v1/beneficiaries/**]
+        - id: payment-service
+          uri: ${PAYMENT_SERVICE_URI:lb://payment-service}
+          predicates: [Path=/api/v1/payments/**,/api/v1/webhooks/**]
+        - id: transaction-service
+          uri: ${TRANSACTION_SERVICE_URI:lb://transaction-service}
+          predicates: [Path=/api/v1/transactions/**,/api/v1/statements/**]
+        - id: chat-service
+          uri: ${CHAT_SERVICE_URI:lb://chat-service}
+          predicates: [Path=/api/v1/chat/**,/ws/chat/**]
+
+banking:
+  gateway:
+    rate-limit:
+      authenticated-requests-per-second: 100
+      anonymous-requests-per-second: 10
+      burst-capacity: 200
+    idempotency:
+      required-methods: [POST, PUT, PATCH]
+      header-name: Idempotency-Key
+    headers:
+      request-id: X-Request-Id
+      correlation-id: X-Correlation-Id
+

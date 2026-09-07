@@ -1,0 +1,21 @@
+server:
+  port: 8081
+
+spring:
+  datasource:
+    url: ${IDENTITY_DB_URL:jdbc:postgresql://localhost:5432/identity_db}
+
+banking:
+  identity:
+    access-token-ttl: 15m
+    refresh-token-ttl: 30d
+    max-failed-attempts: 5
+    lock-duration: 30m
+    mfa-required-roles: [ADMIN, SUPPORT, COMPLIANCE, OPERATIONS]
+    password:
+      min-length: 12
+      history-count: 5
+  events:
+    user-created-topic: banking.identity.user-created.v1
+    user-status-topic: banking.identity.user-status.v1
+

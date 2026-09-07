@@ -1,0 +1,23 @@
+server:
+  port: 8083
+
+spring:
+  datasource:
+    url: ${TRANSFER_DB_URL:jdbc:postgresql://localhost:5432/transfer_db}
+
+banking:
+  transfer:
+    idempotency-ttl: 24h
+    max-beneficiaries: 100
+    beneficiary-cooling-period: 30m
+    limits:
+      per-transaction: ${TRANSFER_LIMIT_PER_TXN:200000}
+      daily: ${TRANSFER_LIMIT_DAILY:500000}
+    saga:
+      timeout: 30s
+      compensation-retry-attempts: 10
+  events:
+    command-topic: banking.transfer.commands.v1
+    event-topic: banking.transfer.events.v1
+    dead-letter-topic: banking.transfer.dlt.v1
+

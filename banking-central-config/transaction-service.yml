@@ -1,0 +1,18 @@
+server:
+  port: 8085
+
+spring:
+  datasource:
+    url: ${TRANSACTION_DB_URL:jdbc:postgresql://localhost:5432/transaction_db}
+
+banking:
+  transaction:
+    page-size-default: 20
+    page-size-max: 100
+    statement-retention-years: 10
+    export:
+      bucket: ${STATEMENT_BUCKET:banking-statements-local}
+      signed-url-ttl: 10m
+  events:
+    ledger-posted-topic: banking.ledger.posted.v1
+

@@ -1,0 +1,33 @@
+server:
+  port: 8084
+
+spring:
+  datasource:
+    url: ${PAYMENT_DB_URL:jdbc:postgresql://localhost:5432/payment_db}
+
+banking:
+  payment:
+    provider: ${PAYMENT_PROVIDER:razorpay}
+    provider-base-url: ${PAYMENT_PROVIDER_BASE_URL}
+    api-key-ref: ${PAYMENT_API_KEY_REF}
+    webhook-secret-ref: ${PAYMENT_WEBHOOK_SECRET_REF}
+    idempotency-ttl: 48h
+    webhook-signature-required: true
+    settlement-reconciliation-cron: "0 */15 * * * *"
+  events:
+    payment-events-topic: banking.payment.events.v1
+    settlement-events-topic: banking.payment.settlement.v1
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      paymentProvider:
+        base-config: default
+        failure-rate-threshold: 40
+        wait-duration-in-open-state: 60s
+  retry:
+    instances:
+      paymentStatusLookup:
+        max-attempts: 3
+        wait-duration: 1s
+
